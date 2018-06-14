@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/argoproj/argo-cd/util/argo"
+
 	"github.com/ghodss/yaml"
 	"github.com/ksonnet/ksonnet/pkg/app"
 	log "github.com/sirupsen/logrus"
@@ -225,6 +227,15 @@ func (s *Server) Update(ctx context.Context, q *ApplicationUpdateRequest) (*appv
 // UpdateSpec updates an application spec
 func (s *Server) UpdateSpec(ctx context.Context, q *ApplicationUpdateSpecRequest) (*appv1.ApplicationSpec, error) {
 	a, err := s.appclientset.ArgoprojV1alpha1().Applications(s.ns).Get(*q.Name, metav1.GetOptions{})
+
+	var validParams []appv1.ComponentParameter
+	for _, unvettedParam := range a.Spec.Source.ComponentParameterOverrides {
+		if argo.CheckValidParam(a, unvettedParam) {
+			validParams = append(validParams, unvettedParam)
+		}
+	}
+	a.Spec.Source.ComponentParameterOverrides = validParams
+
 	if err != nil {
 		return nil, err
 	}

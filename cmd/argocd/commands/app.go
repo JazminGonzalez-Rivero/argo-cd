@@ -27,6 +27,7 @@ import (
 	argoappv1 "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/argoproj/argo-cd/server/application"
 	"github.com/argoproj/argo-cd/util"
+	"github.com/argoproj/argo-cd/util/argo"
 	"github.com/argoproj/argo-cd/util/cli"
 	"github.com/argoproj/argo-cd/util/diff"
 )
@@ -219,16 +220,6 @@ func printParams(app *argoappv1.Application) {
 	_ = w.Flush()
 }
 
-// CheckValidParam checks if the parameter passed is overridable for the given app
-func CheckValidParam(app *argoappv1.Application, newParam argoappv1.ComponentParameter) error {
-	for _, p := range app.Status.Parameters {
-		if p.Name == newParam.Name {
-			return nil
-		}
-	}
-	return fmt.Errorf("Parameter '%s' does not exist in ksonnet", newParam.Name)
-}
-
 // NewApplicationSetCommand returns a new instance of an `argocd app set` command
 func NewApplicationSetCommand(clientOpts *argocdclient.ClientOptions) *cobra.Command {
 	var (
@@ -271,11 +262,17 @@ func NewApplicationSetCommand(clientOpts *argocdclient.ClientOptions) *cobra.Com
 				os.Exit(1)
 			}
 			setParameterOverrides(app, appOpts.parameters)
-			_, err = appIf.UpdateSpec(context.Background(), &application.ApplicationUpdateSpecRequest{
+			oldOverrides := app.Spec.Source.ComponentParameterOverrides
+			updatedSpec, err := appIf.UpdateSpec(context.Background(), &application.ApplicationUpdateSpecRequest{
 				Name: &app.Name,
 				Spec: app.Spec,
 			})
 			errors.CheckError(err)
+
+			newOverrides := updatedSpec.Source.ComponentParameterOverrides
+			if len(oldOverrides) > len(newOverrides) {
+				log.Warnf("Some Invalid Overrides were dropped")
+			}
 		},
 	}
 	addAppFlags(command, &appOpts)
@@ -711,9 +708,8 @@ func setParameterOverrides(app *argoappv1.Application, parameters []string) {
 			Name:      parts[1],
 			Value:     parts[2],
 		}
-		err := CheckValidParam(app, newParam)
-		if err != nil {
-			log.Fatal(err)
+		if !argo.CheckValidParam(app, newParam) {
+			log.Fatal("Parameter '%s' in '%s' does not exist in ksonnet", newParam.Name, newParam.Component)
 		}
 		index := -1
 		for i, cp := range newParams {

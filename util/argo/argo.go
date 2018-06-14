@@ -12,6 +12,16 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
+// CheckValidParam checks if the parameter passed is overridable for the given app
+func CheckValidParam(app *argoappv1.Application, newParam argoappv1.ComponentParameter) bool {
+	for _, p := range app.Status.Parameters {
+		if p.Name == newParam.Name {
+			return true
+		}
+	}
+	return false
+}
+
 // RefreshApp updates the refresh annotation of an application to coerce the controller to process it
 func RefreshApp(appIf v1alpha1.ApplicationInterface, name string) (*argoappv1.Application, error) {
 	refreshString := time.Now().UTC().Format(time.RFC3339)
