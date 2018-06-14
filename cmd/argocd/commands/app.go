@@ -220,13 +220,13 @@ func printParams(app *argoappv1.Application) {
 }
 
 // CheckValidParam checks if the parameter passed is overridable for the given app
-func CheckValidParam(app *argoappv1.Application, param string) bool {
+func CheckValidParam(app *argoappv1.Application, newParam argoappv1.ComponentParameter) error {
 	for _, p := range app.Status.Parameters {
-		if p.Name == param {
-			return true
+		if p.Name == newParam.Name {
+			return nil
 		}
 	}
-	return false
+	return fmt.Errorf("Parameter '%s' does not exist in ksonnet", newParam.Name)
 }
 
 // NewApplicationSetCommand returns a new instance of an `argocd app set` command
@@ -270,7 +270,6 @@ func NewApplicationSetCommand(clientOpts *argocdclient.ClientOptions) *cobra.Com
 				c.HelpFunc()(c, args)
 				os.Exit(1)
 			}
-			CheckValidParam(app, appOpts.parameters)
 			setParameterOverrides(app, appOpts.parameters)
 			_, err = appIf.UpdateSpec(context.Background(), &application.ApplicationUpdateSpecRequest{
 				Name: &app.Name,
@@ -711,6 +710,10 @@ func setParameterOverrides(app *argoappv1.Application, parameters []string) {
 			Component: parts[0],
 			Name:      parts[1],
 			Value:     parts[2],
+		}
+		err := CheckValidParam(app, newParam)
+		if err != nil {
+			log.Fatal(err)
 		}
 		index := -1
 		for i, cp := range newParams {
