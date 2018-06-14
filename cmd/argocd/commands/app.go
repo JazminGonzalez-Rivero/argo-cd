@@ -219,6 +219,16 @@ func printParams(app *argoappv1.Application) {
 	_ = w.Flush()
 }
 
+// CheckValidParam checks if the parameter passed is overridable for the given app
+func CheckValidParam(app *argoappv1.Application, param string) bool {
+	for _, p := range app.Status.Parameters {
+		if p.Name == param {
+			return true
+		}
+	}
+	return false
+}
+
 // NewApplicationSetCommand returns a new instance of an `argocd app set` command
 func NewApplicationSetCommand(clientOpts *argocdclient.ClientOptions) *cobra.Command {
 	var (
@@ -260,6 +270,7 @@ func NewApplicationSetCommand(clientOpts *argocdclient.ClientOptions) *cobra.Com
 				c.HelpFunc()(c, args)
 				os.Exit(1)
 			}
+			CheckValidParam(app, appOpts.parameters)
 			setParameterOverrides(app, appOpts.parameters)
 			_, err = appIf.UpdateSpec(context.Background(), &application.ApplicationUpdateSpecRequest{
 				Name: &app.Name,
