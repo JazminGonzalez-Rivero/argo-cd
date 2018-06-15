@@ -709,7 +709,7 @@ func setParameterOverrides(app *argoappv1.Application, parameters []string) {
 			Value:     parts[2],
 		}
 		if !argo.CheckValidParam(app, newParam) {
-			log.Fatal("Parameter '%s' in '%s' does not exist in ksonnet", newParam.Name, newParam.Component)
+			log.Fatalf("Parameter '%s' in '%s' does not exist in ksonnet", newParam.Name, newParam.Component)
 		}
 		index := -1
 		for i, cp := range newParams {
