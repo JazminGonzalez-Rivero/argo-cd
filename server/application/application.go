@@ -227,15 +227,33 @@ func (s *Server) Update(ctx context.Context, q *ApplicationUpdateRequest) (*appv
 // UpdateSpec updates an application spec
 func (s *Server) UpdateSpec(ctx context.Context, q *ApplicationUpdateSpecRequest) (*appv1.ApplicationSpec, error) {
 	a, err := s.appclientset.ArgoprojV1alpha1().Applications(s.ns).Get(*q.Name, metav1.GetOptions{})
-
-	var validParams []appv1.ComponentParameter
-	for _, unvettedParam := range a.Spec.Source.ComponentParameterOverrides {
-		if argo.CheckValidParam(a, unvettedParam) {
-			validParams = append(validParams, unvettedParam)
+	var overrideParams []appv1.ComponentParameter
+	for _, unvettedExistingParam := range a.Spec.Source.ComponentParameterOverrides {
+		if argo.CheckValidParam(a, unvettedExistingParam) {
+			overrideParams = append(overrideParams, unvettedExistingParam)
 		}
 	}
-	a.Spec.Source.ComponentParameterOverrides = validParams
+	var requestParams []appv1.ComponentParameter
+	for _, unvettedRequestedParam := range q.Spec.Source.ComponentParameterOverrides {
+		if argo.CheckValidParam(a, unvettedRequestedParam) {
+			requestParams = append(requestParams, unvettedRequestedParam)
+		} else {
+			grpc.ErrPermissionDenied
+		}
+	}
+	for _, overrideParam := range overrideParams {
+		paramExists := false
+		for _, requestParam := range requestParams {
+			if requestParam.Component == overrideParam.Component && requestParam.Name == overrideParam.Name {
+				paramExists = true
+			}
+		}
+		if !paramExists {
+			requestParams = append(requestParams, overrideParam)
+		}
+	}
 
+	q.Spec.Source.ComponentParameterOverrides = requestParams
 	if err != nil {
 		return nil, err
 	}
