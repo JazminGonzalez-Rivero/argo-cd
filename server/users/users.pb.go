@@ -8,7 +8,6 @@
 		server/users/users.proto
 
 	It has these top-level messages:
-		Body
 		UpdatePasswordRequest
 		UpdatePasswordResponse
 */
@@ -36,39 +35,20 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
-type Body struct {
+// message Body {
+//     string currentPassword = 2;
+//     string newPassword = 3;
+// }
+type UpdatePasswordRequest struct {
+	Name            string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	CurrentPassword string `protobuf:"bytes,2,opt,name=currentPassword,proto3" json:"currentPassword,omitempty"`
 	NewPassword     string `protobuf:"bytes,3,opt,name=newPassword,proto3" json:"newPassword,omitempty"`
-}
-
-func (m *Body) Reset()                    { *m = Body{} }
-func (m *Body) String() string            { return proto.CompactTextString(m) }
-func (*Body) ProtoMessage()               {}
-func (*Body) Descriptor() ([]byte, []int) { return fileDescriptorUsers, []int{0} }
-
-func (m *Body) GetCurrentPassword() string {
-	if m != nil {
-		return m.CurrentPassword
-	}
-	return ""
-}
-
-func (m *Body) GetNewPassword() string {
-	if m != nil {
-		return m.NewPassword
-	}
-	return ""
-}
-
-type UpdatePasswordRequest struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Body *Body  `protobuf:"bytes,2,opt,name=body" json:"body,omitempty"`
 }
 
 func (m *UpdatePasswordRequest) Reset()                    { *m = UpdatePasswordRequest{} }
 func (m *UpdatePasswordRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdatePasswordRequest) ProtoMessage()               {}
-func (*UpdatePasswordRequest) Descriptor() ([]byte, []int) { return fileDescriptorUsers, []int{1} }
+func (*UpdatePasswordRequest) Descriptor() ([]byte, []int) { return fileDescriptorUsers, []int{0} }
 
 func (m *UpdatePasswordRequest) GetName() string {
 	if m != nil {
@@ -77,11 +57,18 @@ func (m *UpdatePasswordRequest) GetName() string {
 	return ""
 }
 
-func (m *UpdatePasswordRequest) GetBody() *Body {
+func (m *UpdatePasswordRequest) GetCurrentPassword() string {
 	if m != nil {
-		return m.Body
+		return m.CurrentPassword
 	}
-	return nil
+	return ""
+}
+
+func (m *UpdatePasswordRequest) GetNewPassword() string {
+	if m != nil {
+		return m.NewPassword
+	}
+	return ""
 }
 
 type UpdatePasswordResponse struct {
@@ -90,10 +77,9 @@ type UpdatePasswordResponse struct {
 func (m *UpdatePasswordResponse) Reset()                    { *m = UpdatePasswordResponse{} }
 func (m *UpdatePasswordResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdatePasswordResponse) ProtoMessage()               {}
-func (*UpdatePasswordResponse) Descriptor() ([]byte, []int) { return fileDescriptorUsers, []int{2} }
+func (*UpdatePasswordResponse) Descriptor() ([]byte, []int) { return fileDescriptorUsers, []int{1} }
 
 func init() {
-	proto.RegisterType((*Body)(nil), "users.Body")
 	proto.RegisterType((*UpdatePasswordRequest)(nil), "users.UpdatePasswordRequest")
 	proto.RegisterType((*UpdatePasswordResponse)(nil), "users.UpdatePasswordResponse")
 }
@@ -172,36 +158,6 @@ var _UsersService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "server/users/users.proto",
 }
 
-func (m *Body) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Body) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.CurrentPassword) > 0 {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintUsers(dAtA, i, uint64(len(m.CurrentPassword)))
-		i += copy(dAtA[i:], m.CurrentPassword)
-	}
-	if len(m.NewPassword) > 0 {
-		dAtA[i] = 0x1a
-		i++
-		i = encodeVarintUsers(dAtA, i, uint64(len(m.NewPassword)))
-		i += copy(dAtA[i:], m.NewPassword)
-	}
-	return i, nil
-}
-
 func (m *UpdatePasswordRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -223,15 +179,17 @@ func (m *UpdatePasswordRequest) MarshalTo(dAtA []byte) (int, error) {
 		i = encodeVarintUsers(dAtA, i, uint64(len(m.Name)))
 		i += copy(dAtA[i:], m.Name)
 	}
-	if m.Body != nil {
+	if len(m.CurrentPassword) > 0 {
 		dAtA[i] = 0x12
 		i++
-		i = encodeVarintUsers(dAtA, i, uint64(m.Body.Size()))
-		n1, err := m.Body.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n1
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.CurrentPassword)))
+		i += copy(dAtA[i:], m.CurrentPassword)
+	}
+	if len(m.NewPassword) > 0 {
+		dAtA[i] = 0x1a
+		i++
+		i = encodeVarintUsers(dAtA, i, uint64(len(m.NewPassword)))
+		i += copy(dAtA[i:], m.NewPassword)
 	}
 	return i, nil
 }
@@ -263,20 +221,6 @@ func encodeVarintUsers(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func (m *Body) Size() (n int) {
-	var l int
-	_ = l
-	l = len(m.CurrentPassword)
-	if l > 0 {
-		n += 1 + l + sovUsers(uint64(l))
-	}
-	l = len(m.NewPassword)
-	if l > 0 {
-		n += 1 + l + sovUsers(uint64(l))
-	}
-	return n
-}
-
 func (m *UpdatePasswordRequest) Size() (n int) {
 	var l int
 	_ = l
@@ -284,8 +228,12 @@ func (m *UpdatePasswordRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovUsers(uint64(l))
 	}
-	if m.Body != nil {
-		l = m.Body.Size()
+	l = len(m.CurrentPassword)
+	if l > 0 {
+		n += 1 + l + sovUsers(uint64(l))
+	}
+	l = len(m.NewPassword)
+	if l > 0 {
 		n += 1 + l + sovUsers(uint64(l))
 	}
 	return n
@@ -309,114 +257,6 @@ func sovUsers(x uint64) (n int) {
 }
 func sozUsers(x uint64) (n int) {
 	return sovUsers(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *Body) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowUsers
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Body: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Body: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CurrentPassword", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowUsers
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthUsers
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CurrentPassword = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewPassword", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowUsers
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthUsers
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.NewPassword = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipUsers(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthUsers
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *UpdatePasswordRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -478,9 +318,9 @@ func (m *UpdatePasswordRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Body", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrentPassword", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowUsers
@@ -490,24 +330,49 @@ func (m *UpdatePasswordRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthUsers
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Body == nil {
-				m.Body = &Body{}
+			m.CurrentPassword = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewPassword", wireType)
 			}
-			if err := m.Body.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowUsers
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthUsers
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewPassword = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -688,25 +553,23 @@ var (
 func init() { proto.RegisterFile("server/users/users.proto", fileDescriptorUsers) }
 
 var fileDescriptorUsers = []byte{
-	// 313 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x51, 0x41, 0x4b, 0xf3, 0x40,
-	0x10, 0x65, 0xfb, 0xf5, 0x13, 0xdc, 0x8a, 0xc2, 0xa2, 0x12, 0x42, 0x5b, 0x4b, 0x40, 0x28, 0x88,
-	0x5d, 0xac, 0xe0, 0xc1, 0x63, 0xcf, 0x1e, 0x24, 0xd2, 0x8b, 0xb7, 0x6d, 0x32, 0xc4, 0x88, 0xdd,
-	0x89, 0xbb, 0x9b, 0x96, 0x2a, 0x5e, 0x3c, 0x7a, 0xf5, 0x4f, 0x79, 0x14, 0xfc, 0x03, 0x12, 0xfc,
-	0x21, 0x92, 0x49, 0x94, 0x5a, 0xf4, 0xb2, 0xcc, 0xbe, 0x79, 0xf3, 0xf6, 0xed, 0x3c, 0xee, 0x59,
-	0x30, 0x33, 0x30, 0x32, 0xb7, 0x60, 0x6c, 0x75, 0x0e, 0x32, 0x83, 0x0e, 0xc5, 0x7f, 0xba, 0xf8,
-	0xdb, 0x09, 0x26, 0x48, 0x88, 0x2c, 0xab, 0xaa, 0xe9, 0xb7, 0x13, 0xc4, 0xe4, 0x06, 0xa4, 0xca,
-	0x52, 0xa9, 0xb4, 0x46, 0xa7, 0x5c, 0x8a, 0xba, 0x1e, 0x0d, 0x42, 0xde, 0x1c, 0x61, 0xbc, 0x10,
-	0x7d, 0xbe, 0x15, 0xe5, 0xc6, 0x80, 0x76, 0xe7, 0xca, 0xda, 0x39, 0x9a, 0xd8, 0x6b, 0xf4, 0x58,
-	0x7f, 0x3d, 0x5c, 0x85, 0x45, 0x8f, 0xb7, 0x34, 0xcc, 0xbf, 0x59, 0xff, 0x88, 0xb5, 0x0c, 0x05,
-	0x67, 0x7c, 0x67, 0x9c, 0xc5, 0xca, 0xc1, 0x17, 0x12, 0xc2, 0x6d, 0x0e, 0xd6, 0x09, 0xc1, 0x9b,
-	0x5a, 0x4d, 0xc1, 0x63, 0x34, 0x43, 0xb5, 0xd8, 0xe3, 0xcd, 0x09, 0xc6, 0x0b, 0x7a, 0xad, 0x35,
-	0x6c, 0x0d, 0xaa, 0x7f, 0x95, 0x9e, 0x42, 0x6a, 0x04, 0x1e, 0xdf, 0x5d, 0x55, 0xb3, 0x19, 0x6a,
-	0x0b, 0xc3, 0x27, 0xc6, 0x37, 0xc6, 0x25, 0xfd, 0x02, 0xcc, 0x2c, 0x8d, 0x40, 0xdc, 0xf1, 0xcd,
-	0x9f, 0x54, 0xd1, 0xae, 0xf5, 0x7e, 0xf5, 0xe3, 0x77, 0xfe, 0xe8, 0x56, 0xfa, 0xc1, 0xc1, 0xe3,
-	0xdb, 0xc7, 0x73, 0x63, 0xdf, 0xef, 0xd0, 0xee, 0x66, 0x47, 0xf5, 0xe6, 0xef, 0x4b, 0xdf, 0x0f,
-	0x32, 0xab, 0xe9, 0xa7, 0x64, 0x73, 0x74, 0xf2, 0x52, 0x74, 0xd9, 0x6b, 0xd1, 0x65, 0xef, 0x45,
-	0x97, 0x5d, 0xf6, 0x93, 0xd4, 0x5d, 0xe5, 0x93, 0x41, 0x84, 0x53, 0xa9, 0x0c, 0xa5, 0x72, 0x4d,
-	0xc5, 0x61, 0x14, 0xcb, 0xe5, 0x1c, 0x27, 0x6b, 0x94, 0xc3, 0xf1, 0x67, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xcd, 0xc0, 0x6e, 0xa0, 0xde, 0x01, 0x00, 0x00,
+	// 284 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x28, 0x4e, 0x2d, 0x2a,
+	0x4b, 0x2d, 0xd2, 0x2f, 0x2d, 0x4e, 0x2d, 0x2a, 0x86, 0x90, 0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9,
+	0x42, 0xac, 0x60, 0x8e, 0x94, 0x48, 0x7a, 0x7e, 0x7a, 0x3e, 0x58, 0x44, 0x1f, 0xc4, 0x82, 0x48,
+	0x4a, 0xc9, 0xa4, 0xe7, 0xe7, 0xa7, 0xe7, 0xa4, 0xea, 0x27, 0x16, 0x64, 0xea, 0x27, 0xe6, 0xe5,
+	0xe5, 0x97, 0x24, 0x96, 0x64, 0xe6, 0xe7, 0x41, 0xb5, 0x2a, 0x95, 0x73, 0x89, 0x86, 0x16, 0xa4,
+	0x24, 0x96, 0xa4, 0x06, 0x24, 0x16, 0x17, 0x97, 0xe7, 0x17, 0xa5, 0x04, 0xa5, 0x16, 0x96, 0xa6,
+	0x16, 0x97, 0x08, 0x09, 0x71, 0xb1, 0xe4, 0x25, 0xe6, 0xa6, 0x4a, 0x30, 0x2a, 0x30, 0x6a, 0x70,
+	0x06, 0x81, 0xd9, 0x42, 0x1a, 0x5c, 0xfc, 0xc9, 0xa5, 0x45, 0x45, 0xa9, 0x79, 0x25, 0x30, 0xd5,
+	0x12, 0x4c, 0x60, 0x69, 0x74, 0x61, 0x21, 0x05, 0x2e, 0xee, 0xbc, 0xd4, 0x72, 0xb8, 0x2a, 0x66,
+	0xb0, 0x2a, 0x64, 0x21, 0x25, 0x09, 0x2e, 0x31, 0x74, 0x8b, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a, 0x53,
+	0x8d, 0xda, 0x19, 0xb9, 0x78, 0x42, 0x41, 0x1e, 0x0a, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0x15,
+	0x2a, 0xe7, 0xe2, 0x43, 0x55, 0x2a, 0x24, 0xa3, 0x07, 0xf1, 0x3e, 0x56, 0xa7, 0x4b, 0xc9, 0xe2,
+	0x90, 0x85, 0x98, 0xaf, 0xa4, 0xd1, 0x74, 0xf9, 0xc9, 0x64, 0x26, 0x25, 0x29, 0x59, 0x70, 0x90,
+	0x94, 0x19, 0x42, 0x03, 0xb4, 0x1a, 0xe4, 0xc5, 0x5a, 0xfd, 0x02, 0xa8, 0x72, 0x2b, 0x46, 0x2d,
+	0x27, 0xb3, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x31, 0x4a,
+	0x23, 0x3d, 0xb3, 0x24, 0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f, 0x57, 0x3f, 0xb1, 0x08, 0x1c, 0xd2,
+	0x59, 0x60, 0x86, 0x6e, 0x72, 0x8a, 0x3e, 0x72, 0xdc, 0x24, 0xb1, 0x81, 0xc3, 0xd6, 0x18, 0x10,
+	0x00, 0x00, 0xff, 0xff, 0xd2, 0xba, 0x5a, 0xd1, 0xb2, 0x01, 0x00, 0x00,
 }

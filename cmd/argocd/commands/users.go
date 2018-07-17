@@ -54,13 +54,14 @@ func NewUsersChangePasswordCommand(clientOpts *argocdclient.ClientOptions) *cobr
 			}
 
 			userName := args[0]
-			body := users.Body{
+			// body := users.Body{
+			// 	CurrentPassword: CurrentPassword,
+			// 	NewPassword:     NewPassword,
+			// }
+			UpdatePasswordRequest := users.UpdatePasswordRequest{
+				Name:            userName,
 				CurrentPassword: CurrentPassword,
 				NewPassword:     NewPassword,
-			}
-			UpdatePasswordRequest := users.UpdatePasswordRequest{
-				Name: userName,
-				Body: &body,
 			}
 
 			conn, usrIf := argocdclient.NewClientOrDie(clientOpts).NewUsersClientOrDie()

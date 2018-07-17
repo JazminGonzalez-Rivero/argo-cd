@@ -30,12 +30,12 @@ func (s *Server) UpdatePassword(ctx context.Context, q *UpdatePasswordRequest) (
 		return nil, err
 	}
 
-	err = s.sessionMgr.VerifyUsernamePassword(q.Name, q.Body.GetCurrentPassword())
+	err = s.sessionMgr.VerifyUsernamePassword(q.Name, q.GetCurrentPassword())
 	if err != nil {
 		return nil, err
 	}
 
-	hashedPassword, err := password.HashPassword(q.Body.GetNewPassword())
+	hashedPassword, err := password.HashPassword(q.GetNewPassword())
 	if err != nil {
 		return nil, err
 	}

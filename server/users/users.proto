@@ -12,13 +12,14 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
 
-message Body {
-    string currentPassword = 2;
-    string newPassword = 3; 
-}
+// message Body {
+//     string currentPassword = 2;
+//     string newPassword = 3; 
+// }
 message UpdatePasswordRequest {
     string name = 1;
-    Body body = 2;
+	string currentPassword = 2;
+	string newPassword = 3;
 }
 
 message UpdatePasswordResponse {}
@@ -30,7 +31,7 @@ service UsersService {
 	rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {
 		option (google.api.http) = {
 			put: "/api/v1/users/{name}/password"
-			body: "body"
+			body: "*"
 		};
 	}
 

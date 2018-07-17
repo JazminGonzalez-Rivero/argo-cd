@@ -975,7 +975,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/usersBody"
+              "$ref": "#/definitions/usersUpdatePasswordRequest"
             }
           }
         ],
@@ -1318,10 +1318,14 @@
         }
       }
     },
-    "usersBody": {
+    "usersUpdatePasswordRequest": {
       "type": "object",
+      "title": "message Body {\n    string currentPassword = 2;\n    string newPassword = 3; \n}",
       "properties": {
         "currentPassword": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         },
         "newPassword": {

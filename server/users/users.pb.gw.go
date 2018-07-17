@@ -32,7 +32,7 @@ func request_UsersService_UpdatePassword_0(ctx context.Context, marshaler runtim
 	var protoReq UpdatePasswordRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Body); err != nil {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
